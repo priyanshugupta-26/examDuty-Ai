@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg: #F8FAFC;
+    --surface: #FFFFFF;
+    --surface-muted: #F1F5F9;
+    --border: #E2E8F0;
+    --text: #0F172A;
+    --text-muted: #475569;
+    --text-subtle: #94A3B8;
+    
+    --primary: #3B5BDB;
+    --primary-hover: #364FC7;
+    --primary-soft: #EDF2FF;
+    
+    --accent: #0CA678;
+    
+    --success: #12B886;
+    --success-soft: #E6FCF5;
+    
+    --warning: #F59F00;
+    --warning-soft: #FFF9DB;
+    
+    --danger: #E03131;
+    --danger-soft: #FFF5F5;
+    
+    --info: #1C7ED6;
+    --info-soft: #E7F5FF;
+  }
+
+  .dark {
+    --bg: #0B1120;
+    --surface: #111A2E;
+    --surface-muted: #17223B;
+    --border: #24314D;
+    --text: #E6EAF2;
+    --text-muted: #9AA7C0;
+    --text-subtle: #64748B;
+    
+    --primary: #748FFC;
+    --primary-hover: #5C7CFA;
+    --primary-soft: rgba(116, 143, 252, 0.14);
+    
+    --accent: #20C997;
+    
+    --success: #38D9A9;
+    --success-soft: rgba(56, 217, 169, 0.15);
+    
+    --warning: #FFD43B;
+    --warning-soft: rgba(255, 212, 59, 0.15);
+    
+    --danger: #FF8787;
+    --danger-soft: rgba(255, 135, 135, 0.15);
+    
+    --info: #4DABF7;
+    --info-soft: rgba(77, 171, 247, 0.15);
+  }
+
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-jakarta), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    letter-spacing: -0.015em;
+  }
+
+  .font-mono, code, pre, .font-code {
+    font-family: var(--font-jetbrains-mono), monospace;
+  }
+}
+
+@theme {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-text-subtle: var(--text-subtle);
+  
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  
+  --color-accent: var(--accent);
+  
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+
+  --font-heading: var(--font-jakarta);
+  --font-body: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+
+  --radius-card: 12px;
+  --radius-input: 8px;
+}
+
+/* Custom elevation & styles per SPEC */
+.card-elevation {
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background-color: var(--surface);
+  transition: all 0.2s ease;
+}
+
+.card-elevation-interactive:hover {
+  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.1), 0 2px 4px -2px rgba(15, 23, 42, 0.06);
+  border-color: rgba(59, 91, 219, 0.35);
+}
+
+.tabular-numbers {
+  font-variant-numeric: tabular-nums;
+}
