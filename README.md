@@ -154,6 +154,31 @@ npm run dev
 
 ---
 
+## 🐳 Docker & Render Deployment
+
+ExamDuty AI is fully containerized and production-ready for deployment on **Render** and **Docker**. For full step-by-step documentation, see [DEPLOYMENT.md](DEPLOYMENT.md).
+
+### Quick Docker Run (Local Compose)
+Spin up both backend and frontend containers with a single command:
+```bash
+docker compose up --build -d
+```
+- **Frontend Web Portal:** `http://localhost:3000`
+- **FastAPI API & Docs:** `http://localhost:8000/api/docs`
+- **Health Check:** `http://localhost:8000/api/health`
+
+### Deploy to Render (1-Click Blueprint)
+1. Push this repository to your GitHub account.
+2. Go to your [Render Dashboard](https://dashboard.render.com/) and click **New +** $\rightarrow$ **Blueprint**.
+3. Select your `examDuty-Ai` repository. Render automatically reads `render.yaml` and sets up:
+   - **`examduty-backend`** (FastAPI, CP-SAT solver, auto-seeding, health checks)
+   - **`examduty-frontend`** (Next.js 16, auto-linked to backend URL)
+4. Click **Apply** and your university operations platform is live!
+
+*(For Render Free Tier single web service deployment, see the [DEPLOYMENT.md](DEPLOYMENT.md) Single Service option using the root `Dockerfile`)*
+
+---
+
 ## ⚙️ Environment Variables
 
 ### Root / Backend `.env`

@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -11,22 +12,50 @@ from .routers import auth, system, allocation, faculty, halls, exams, imports, n
 # Create tables
 Base.metadata.create_all(bind=engine)
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Automatically seed if database is empty (e.g. first deployment on Render or Docker)
+    from .models import User
+    from .seed import seed_database
+    from .database import SessionLocal
+
+    db = SessionLocal()
+    try:
+        if db.query(User).count() == 0:
+            print("[STARTUP] Empty database detected. Seeding initial VFSTR demo data...")
+            seed_database(db)
+            print("[STARTUP] Initial demo data seeded successfully with draft allocations.")
+    except Exception as e:
+        print(f"[STARTUP] Notice during seed check: {e}")
+    finally:
+        db.close()
+    yield
+
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     docs_url=f"{settings.API_V1_STR}/docs",
     redoc_url=f"{settings.API_V1_STR}/redoc",
+    lifespan=lifespan,
 )
 
 # CORS configuration
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+cors_kwargs = {
+    "allow_credentials": True,
+    "allow_methods": ["*"],
+    "allow_headers": ["*"],
+}
+
+if "*" in settings.CORS_ORIGINS:
+    cors_kwargs["allow_origin_regex"] = r".*"
+else:
+    cors_kwargs["allow_origins"] = settings.CORS_ORIGINS
+    cors_kwargs["allow_origin_regex"] = r"https?://.*\.onrender\.com.*"
+
+app.add_middleware(CORSMiddleware, **cors_kwargs)
 
 # Consistent error format handlers
 @app.exception_handler(StarletteHTTPException)
@@ -79,6 +108,18 @@ app.include_router(assistant.router, prefix=settings.API_V1_STR)
 app.include_router(reports.router, prefix=settings.API_V1_STR)
 app.include_router(audit.router, prefix=settings.API_V1_STR)
 
+# Health checks for Render, Docker, and uptime monitors
+@app.get("/", tags=["system"])
+def root_check():
+    return {
+        "status": "healthy",
+        "service": settings.PROJECT_NAME,
+        "version": settings.VERSION,
+        "docs": f"{settings.API_V1_STR}/docs",
+    }
+
+@app.get("/health", tags=["system"])
+@app.get("/healthz", tags=["system"])
 @app.get("/api/health", tags=["system"])
 def health_check():
     return {
@@ -86,4 +127,3 @@ def health_check():
         "service": settings.PROJECT_NAME,
         "version": settings.VERSION,
     }
-

@@ -1,4 +1,33 @@
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+export function getApiBaseUrl(): string {
+  let url = (process.env.NEXT_PUBLIC_API_URL || "").trim();
+
+  if (typeof window !== "undefined") {
+    const saved = localStorage.getItem("examduty_api_url");
+    if (saved && saved.trim()) return saved.trim();
+
+    // If an external production URL is configured
+    if (url && url.startsWith("http") && !url.includes("localhost")) {
+      return url.endsWith("/api") ? url : `${url.replace(/\/$/, "")}/api`;
+    }
+
+    // If running on localhost
+    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+      return url || "http://localhost:8000/api";
+    }
+
+    // When deployed on Render or cloud container without explicit backend URL, use relative proxy
+    if (!url || url.includes("localhost")) {
+      return "/api";
+    }
+  }
+
+  if (url) {
+    return url.endsWith("/api") ? url : `${url.replace(/\/$/, "")}/api`;
+  }
+  return "http://localhost:8000/api";
+}
+
+export const API_BASE_URL = getApiBaseUrl();
 
 export interface ApiError {
   error: string;

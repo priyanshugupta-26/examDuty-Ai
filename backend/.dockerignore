@@ -1,0 +1,9 @@
+venv/
+.env
+.env.*
+*.pyc
+__pycache__/
+.pytest_cache/
+examduty.db
+*.db
+*.sqlite

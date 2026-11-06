@@ -1,0 +1,55 @@
+# ========================================================
+# ExamDuty AI — Render Infrastructure as Code (Blueprint)
+# Deploy with 1-click on Render (https://render.com)
+# ========================================================
+
+services:
+  # ========================================================
+  # 1. Backend API Web Service (FastAPI + OR-Tools + Agent)
+  # ========================================================
+  - type: web
+    name: examduty-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    region: oregon
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: DATABASE_URL
+        value: sqlite:///./examduty.db
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: GEMINI_API_KEY
+        sync: false
+
+  # ========================================================
+  # 2. Frontend Web Service (Next.js 16 + Tailwind)
+  # ========================================================
+  - type: web
+    name: examduty-frontend
+    runtime: docker
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    plan: free
+    region: oregon
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: examduty-backend
+          property: url
+      - key: INTERNAL_BACKEND_URL
+        fromService:
+          type: web
+          name: examduty-backend
+          property: url
